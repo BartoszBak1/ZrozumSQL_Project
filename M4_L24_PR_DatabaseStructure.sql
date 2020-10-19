@@ -18,7 +18,7 @@ $do$;
 DROP ROLE IF EXISTS expense_tracker_user; 
 CREATE ROLE expense_tracker_user WITH LOGIN PASSWORD 'p3r50na!3ud93t'; 
 
-REVOKE ALL PRIVILEGES ON SCHEMA public FROM PUBLIC; --  revoke ability to working in public schema of the PUBLIC group 
+REVOKE CREATE ON SCHEMA public FROM PUBLIC; --  revoke ability to create in public schema of the PUBLIC group 
 
 -- IF EXISTS expense_tracker_group, revoke dependent objects from expense_tracker_group to postgres
 DO
