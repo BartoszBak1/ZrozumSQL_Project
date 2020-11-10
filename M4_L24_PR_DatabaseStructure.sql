@@ -51,7 +51,7 @@ GRANT expense_tracker_group TO expense_tracker_user; -- assigment user expense_t
 --- Createing  tabels with keys.
 DROP TABLE IF EXISTS expense_tracker.bank_account_owner CASCADE;
 CREATE TABLE IF NOT EXISTS expense_tracker.bank_account_owner(
-	id_ba_own integer PRIMARY KEY,
+	id_ba_own serial PRIMARY KEY,
 	owner_name varchar(50) NOT NULL,
 	owner_desc varchar(250), 
 	user_login integer NOT NULL, 
@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS expense_tracker.bank_account_owner(
 
 DROP TABLE IF EXISTS expense_tracker.users CASCADE;
 CREATE TABLE IF NOT EXISTS expense_tracker.users(
-	id_user integer PRIMARY KEY,
+	id_user serial PRIMARY KEY,
 	user_login varchar(25) NOT NULL,
 	user_name varchar(50) NOT NULL,
 	user_password varchar(100) NOT NULL,
@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS expense_tracker.users(
 
 DROP TABLE IF EXISTS expense_tracker.transaction_type CASCADE;
 CREATE TABLE IF NOT EXISTS expense_tracker.transaction_type(
-	id_trans_type integer PRIMARY KEY,
+	id_trans_type serial PRIMARY KEY,
 	transaction_type_name varchar(50) NOT NULL,
 	transaction_type_desc varchar(250),
 	active boolean DEFAULT TRUE NOT NULL,
@@ -84,7 +84,7 @@ CREATE TABLE IF NOT EXISTS expense_tracker.transaction_type(
 
 DROP TABLE IF EXISTS expense_tracker.transaction_category CASCADE;
 CREATE TABLE IF NOT EXISTS expense_tracker.transaction_category(
-	id_trans_cat integer PRIMARY KEY,
+	id_trans_cat serial PRIMARY KEY,
 	category_name varchar(50) NOT NULL,
 	category_description varchar(250),
 	active boolean DEFAULT TRUE NOT NULL,
@@ -94,7 +94,7 @@ CREATE TABLE IF NOT EXISTS expense_tracker.transaction_category(
 
 DROP TABLE IF EXISTS expense_tracker.transaction_subcategory CASCADE;
 CREATE TABLE IF NOT EXISTS expense_tracker.transaction_subcategory(
-	id_trans_subcat integer PRIMARY KEY,
+	id_trans_subcat serial PRIMARY KEY,
 	id_trans_cat integer,
 	subcategory_name varchar(50) NOT NULL,
 	subcategory_description varchar(250),
@@ -106,7 +106,7 @@ CREATE TABLE IF NOT EXISTS expense_tracker.transaction_subcategory(
 
 DROP TABLE IF EXISTS expense_tracker.bank_account_types CASCADE;
 CREATE TABLE IF NOT EXISTS expense_tracker.bank_account_types(
-	id_ba_typ integer PRIMARY KEY,
+	id_ba_type serial PRIMARY KEY,
 	ba_type varchar(50) NOT NULL,
 	ba_desc varchar(250),
 	active boolean DEFAULT TRUE NOT NULL ,
@@ -119,21 +119,21 @@ CREATE TABLE IF NOT EXISTS expense_tracker.bank_account_types(
 
 DROP TABLE IF EXISTS expense_tracker.transaction_bank_accounts CASCADE;	
 CREATE TABLE IF NOT EXISTS expense_tracker.transaction_bank_accounts(
-	id_trans_ba integer PRIMARY KEY,
+	id_trans_ba serial PRIMARY KEY,
 	id_ba_own integer,
-	id_ba_typ integer,
+	id_ba_type integer,
 	bank_account_name varchar(50) NOT NULL,
 	bank_account_desc varchar(250),
 	active boolean DEFAULT TRUE NOT NULL,
 	insert_date timestamp DEFAULT current_timestamp,
 	update_date timestamp DEFAULT current_timestamp,
 	FOREIGN KEY (id_ba_own) REFERENCES expense_tracker.bank_account_owner(id_ba_own),
-	FOREIGN KEY (id_ba_typ) REFERENCES expense_tracker.bank_account_types(id_ba_typ)
+	FOREIGN KEY (id_ba_type) REFERENCES expense_tracker.bank_account_types(id_ba_type)
 );
 
 DROP TABLE IF EXISTS expense_tracker.transactions CASCADE;
 CREATE TABLE IF NOT EXISTS expense_tracker.transactions(
-	id_transaction integer PRIMARY KEY,
+	id_transaction serial PRIMARY KEY,
 	id_trans_ba integer,
 	id_trans_cat integer,
 	id_trans_subcat integer,
