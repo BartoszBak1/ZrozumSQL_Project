@@ -17,6 +17,7 @@ SELECT tc.category_name,
 FROM expense_tracker.transaction_category tc 
 LEFT JOIN expense_tracker.transaction_subcategory ts ON tc.id_trans_cat = ts.id_trans_cat
 												AND tc.active = TRUE 
+												AND ts.active  = TRUE 
 ORDER BY tc.id_trans_cat;
 
 -- 3
@@ -29,8 +30,8 @@ JOIN expense_tracker.transaction_category tc ON t.id_trans_cat = tc.id_trans_cat
 											
 -- 4
 									
-INSERT INTO expense_tracker.transaction_subcategory (id_trans_subcat ,id_trans_cat,subcategory_name,subcategory_description)	 
-VALUES (54,1,'warzywa', 'warzywa');
+INSERT INTO expense_tracker.transaction_subcategory (id_trans_cat,subcategory_name,subcategory_description)	 
+VALUES (1,'warzywa', 'warzywa');
 
 WITH transactions_jedzenie_2016 AS (
 	SELECT t.id_transaction
@@ -63,8 +64,9 @@ SELECT tc.category_name,
 	   t.transaction_date,
 	   t.transaction_value
 FROM expense_tracker.transactions t 
-JOIN expense_tracker.transaction_category tc ON t.id_trans_cat = tc.id_trans_cat 
+JOIN expense_tracker.transaction_category tc ON t.id_trans_cat = tc.id_trans_cat 						 
 JOIN expense_tracker.transaction_subcategory ts ON t.id_trans_subcat = ts.id_trans_subcat 
+												AND ts.id_trans_cat = tc.id_trans_cat
 JOIN expense_tracker.transaction_type tt ON t.id_trans_type = tt.id_trans_type 
 JOIN expense_tracker.transaction_bank_accounts tba ON t.id_trans_ba = tba.id_trans_ba 
 												   AND EXTRACT(YEAR FROM t.transaction_date) = '2020'
