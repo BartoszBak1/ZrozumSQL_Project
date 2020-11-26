@@ -1,5 +1,4 @@
-/* 1. Oblicz sumê transakcji w podziale na kategorie transakcji. W wyniku wyœwietl nazwê
-kategorii i ca³kowit¹ sumê.*/
+-- 1
 
 SELECT 
 	tc.category_name,
@@ -8,25 +7,19 @@ FROM expense_tracker.transactions t
 JOIN expense_tracker.transaction_category tc ON tc.id_trans_cat = t.id_trans_cat 
 GROUP BY tc.category_name;
 
-/* 2. Oblicz sumê wydatków na U¿ywki dokonana przez Janusza (Janusz Kowalski) z jego
-konta prywatnego (ROR - Janusz) w obecnym roku 2020.*/
-
+-- 2
 SELECT  tc.category_name,
 	   sum(t.transaction_value) sum_of_expenses
 FROM expense_tracker.transactions t 
 JOIN expense_tracker.transaction_category tc ON tc.id_trans_cat = t.id_trans_cat
 											AND EXTRACT (YEAR FROM t.transaction_date) = '2020'
-											AND tc.category_name = 'U¯YWKI'
+											AND tc.category_name = 'UÂ¯YWKI'
 JOIN expense_tracker.transaction_bank_accounts tba ON tba.id_trans_ba = t.id_trans_ba 
 											AND tba.bank_account_name = 'ROR - Janusz'
 GROUP BY tc.category_name
 
 
-/* 3. Stwórz zapytanie, które bêdzie podsumowywaæ wydatki (typ transakcji: Obci¹¿enie) na
-wspólnym koncie RoR - Janusza i Gra¿ynki w taki sposób, aby widoczny by³ podzia³
-sumy wydatków, ze wzglêdu na rok, rok i kwarta³ (format: 2019_1), rok i miesi¹c (format:
-2019_12) w roku 2019. Skorzystaj z funkcji ROLLUP.*/
-
+-- 3
 SELECT 
 		EXTRACT (YEAR FROM t.transaction_date) AS YEAR,
 		EXTRACT (YEAR FROM t.transaction_date) ||'_'|| EXTRACT (QUARTER FROM t.transaction_date) YEAR_and_QUARTER,
@@ -35,19 +28,15 @@ SELECT
 FROM expense_tracker.transactions t 
 JOIN expense_tracker.transaction_type tt ON tt.id_trans_type = t.id_trans_type 
 										 AND EXTRACT (YEAR FROM t.transaction_date) = '2019'
-										 AND tt.transaction_type_name = 'Obci¹¿enie'
+										 AND tt.transaction_type_name = 'ObciÂ¹Â¿enie'
 JOIN expense_tracker.transaction_bank_accounts tba ON tba.id_trans_ba = t.id_trans_ba 
-											AND tba.bank_account_name = 'ROR - Janusz i Gra¿ynka'
+											AND tba.bank_account_name = 'ROR - Janusz i GraÂ¿ynka'
 GROUP BY ROLLUP (EXTRACT (YEAR FROM t.transaction_date),
 				(EXTRACT (YEAR FROM t.transaction_date)) ||'_'|| (EXTRACT (QUARTER FROM t.transaction_date)),
  				(EXTRACT (YEAR FROM t.transaction_date)) ||'_'|| (EXTRACT (MONTH FROM t.transaction_date)) )
 ORDER BY  YEAR_and_QUARTER;
 
-/* 4. Stwórz zapytanie podsumowuj¹ce sumê wydatków na koncie wspólnym Janusza i
-Gra¿ynki (ROR- Wspólny), wydatki (typ: Obci¹¿enie), w podziale na poszczególne lata
-od roku 2015 wzwy¿. Do wyników (rok, suma wydatków) dodaj korzystaj¹c z funkcji
-okna atrybut, który bêdzie ró¿nic¹ pomiêdzy danym rokiem a poprzednim (balans rok
-do roku).*/
+-- 4
 
 WITH sum_transactions AS (
 				SELECT 
@@ -55,11 +44,11 @@ WITH sum_transactions AS (
 						sum(t.transaction_value) AS sum_transactions_value
 				FROM expense_tracker.transactions t 
 				JOIN expense_tracker.transaction_type tt ON tt.id_trans_type = t.id_trans_type
-										                 AND tt.transaction_type_name = 'Obci¹¿enie'
+										                 AND tt.transaction_type_name = 'ObciÂ¹Â¿enie'
 	            										 AND EXTRACT(YEAR FROM t.transaction_date) >= 2015
 	            JOIN expense_tracker.transaction_bank_accounts tba ON tba.id_trans_ba = t.id_trans_ba  
 				JOIN expense_tracker.bank_account_types bat ON bat.id_ba_type = tba.id_ba_type 
-											                AND bat.ba_type = 'ROR - WSPÓLNY'
+											                AND bat.ba_type = 'ROR - WSPÃ“LNY'
 			    GROUP BY transaction_year 
 			    ), previous_year_transactions AS 
 			   (SELECT *,
@@ -73,9 +62,7 @@ WITH sum_transactions AS (
 											              
 
 
-/* 5. Korzystaj¹c z funkcji LAST_VALUE poka¿ ró¿nicê w dniach, pomiêdzy kolejnymi
-transakcjami (Obci¹¿enie) na prywatnym koncie Janusza (RoR) dla podkategorii
-Technologie w 1 kwartale roku 2020. */
+-- 5
    
 WITH transactions_query AS (
 						SELECT 
