@@ -21,7 +21,6 @@ CREATE OR REPLACE VIEW JK_view AS
 	JOIN expense_tracker.bank_account_owner bao ON tba.id_ba_own = bao.id_ba_own 
 	AND  bao.owner_name = 'Janusz Kowalski';
 
-
 DROP VIEW GK_view;
 CREATE OR REPLACE VIEW JK_view AS 
 	SELECT  bao.owner_name,
@@ -141,7 +140,7 @@ ALTER SEQUENCE expense_tracker.transactions_id_transaction_seq RESTART;*/
 
 
 INSERT INTO expense_tracker.transactions (id_trans_ba, id_trans_cat, id_trans_subcat, 
-                          id_trans_type, id_user, transaction_date, transaction_value,transaction_description) 
+                       id_trans_type, id_user, transaction_date, transaction_value,transaction_description) 
                        VALUES (1,1,4,2,null,now(),-500,'f17');
                       
                       
