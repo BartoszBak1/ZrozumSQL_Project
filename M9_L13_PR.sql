@@ -2,7 +2,7 @@
 konta. W widokach wyœwietl informacje o nazwie kategorii, nazwie podkategorii, typie
 transakcji, dacie transakcji, roku z daty transakcji, wartoœci transakcji i type konta. */
 
-DROP VIEW JK_view;
+
 CREATE OR REPLACE VIEW JK_view AS 
 	SELECT  bao.owner_name,
 			tc.category_name ,
@@ -15,14 +15,15 @@ CREATE OR REPLACE VIEW JK_view AS
 	FROM expense_tracker.transactions t 
 	JOIN expense_tracker.transaction_category tc ON t.id_trans_cat = tc.id_trans_cat
 	JOIN expense_tracker.transaction_subcategory ts ON t.id_trans_subcat = ts.id_trans_subcat 
+													AND tc.id_trans_cat = ts.id_trans_cat 
 	JOIN expense_tracker.transaction_type tt ON t.id_trans_type = tt.id_trans_type 
 	JOIN expense_tracker.transaction_bank_accounts tba ON t.id_trans_ba = tba.id_trans_ba 
 	JOIN expense_tracker.bank_account_types bat ON tba.id_ba_type = bat.id_ba_type 
 	JOIN expense_tracker.bank_account_owner bao ON tba.id_ba_own = bao.id_ba_own 
 	AND  bao.owner_name = 'Janusz Kowalski';
 
-DROP VIEW GK_view;
-CREATE OR REPLACE VIEW JK_view AS 
+
+CREATE OR REPLACE VIEW GK_view AS 
 	SELECT  bao.owner_name,
 			tc.category_name ,
 			ts.subcategory_name ,
@@ -35,6 +36,7 @@ CREATE OR REPLACE VIEW JK_view AS
 	JOIN expense_tracker.transaction_category tc ON t.id_trans_cat = tc.id_trans_cat
 	JOIN expense_tracker.transaction_subcategory ts ON t.id_trans_subcat = ts.id_trans_subcat 
 	JOIN expense_tracker.transaction_type tt ON t.id_trans_type = tt.id_trans_type 
+												AND tc.id_trans_cat = ts.id_trans_cat 
 	JOIN expense_tracker.transaction_bank_accounts tba ON t.id_trans_ba = tba.id_trans_ba 
 	JOIN expense_tracker.bank_account_types bat ON tba.id_ba_type = bat.id_ba_type 
 	JOIN expense_tracker.bank_account_owner bao ON tba.id_ba_own = bao.id_ba_own 
@@ -52,7 +54,8 @@ CREATE OR REPLACE VIEW JiG_view AS
 			bat.ba_type 
 	FROM expense_tracker.transactions t 
 	JOIN expense_tracker.transaction_category tc ON t.id_trans_cat = tc.id_trans_cat
-	JOIN expense_tracker.transaction_subcategory ts ON t.id_trans_subcat = ts.id_trans_subcat 
+	JOIN expense_tracker.transaction_subcategory ts ON t.id_trans_subcat = ts.id_trans_subcat
+													AND tc.id_trans_cat = ts.id_trans_cat 
 	JOIN expense_tracker.transaction_type tt ON t.id_trans_type = tt.id_trans_type 
 	JOIN expense_tracker.transaction_bank_accounts tba ON t.id_trans_ba = tba.id_trans_ba 
 	JOIN expense_tracker.bank_account_types bat ON tba.id_ba_type = bat.id_ba_type 
@@ -164,7 +167,8 @@ danych w tabeli MONTHLY_BUDGET_PLANNED. */
 --2) Trigger dzia³a niepoprawnie jeœli w operacji uptade zmienimy datê transakcji. 
 --3) Trigger nie jest odporny na ró¿ne formaty dat w kolumnie month_year.
 --4) Do tabeli MONTHLY_BUDGET_PLANNED mo¿na by by³o dodaæ informacjê o jakiego konta dotyczy planowany bud¿et i do³¹czyæ j¹ do schematu.
-
+--5) brak primary key 
+--6) W jaki sposób dodawaæ bud¿ety na kolejne okresy (manualnie / automatycznie z u¿yciem jakiejœ procedury)?
 
 
 DROP TABLE IF EXISTS expense_tracker.monthly_budget_planned;	
