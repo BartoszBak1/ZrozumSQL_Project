@@ -1,15 +1,15 @@
-SET client_encoding = 'UTF8'; 
 
-/*1. Zmieñ tabelê USERS w taki sposób, aby pozbyæ siê pola password_salt (wykorzystaj gen_salt()), i has³o przetrzymywane w tabeli,
- powinno byæ has³em zaszyfrowanym funkcj¹ crypt().*/
+/*1. ZmieÅ„ tabelÄ™ USERS w taki sposÃ³b, aby pozbyÄ‡ siÄ™ pola password_salt (wykorzystaj gen_salt()), i hasÅ‚o przetrzymywane w tabeli,
+ powinno byÄ‡ hasÅ‚em zaszyfrowanym funkcjÄ… crypt().*/
 CREATE EXTENSION pgcrypto SCHEMA expense_tracker;
 
 ALTER TABLE  expense_tracker.users DROP COLUMN password_salt;
 UPDATE expense_tracker.users SET user_password = crypt(user_password, gen_salt('md5'));
 
+
 /*2.
-a. Zobacz ile wierszy dla tabel posiadaj¹cych klucze obce ma w sobie wartoœæ -1 (<unknown>).
-b. Czy w atrybutach tabeli TRANSACTIONS s¹ wartoœci nieokreœlone (NULL) - na jakich atrybutach? Jaki procent ca³ego zbioru danych one stanowi¹?
+a. Zobacz ile wierszy dla tabel posiadajÄ…cych klucze obce ma w sobie wartoÅ›Ä‡ -1 (<unknown>).
+b. Czy w atrybutach tabeli TRANSACTIONS sÄ… wartoÅ›ci nieokreÅ›lone (NULL) - na jakich atrybutach? Jaki procent caÅ‚ego zbioru danych one stanowiÄ…?
  */
 
 -- informacje o zmiennych w schemacie expense_tracker
@@ -30,7 +30,7 @@ FROM
       													AND ccu.table_schema = tc.table_schema
 WHERE tc.constraint_type = 'FOREIGN KEY' AND tc.table_schema = 'expense_tracker' ;
 
--- obliczenie ilosci wystepowan wartoœci -1 w kolumnach odpowadaj¹zych za klucze g³ówne w danych tabelach
+-- obliczenie ilosci wystepowan wartoÅ›ci -1 w kolumnach odpowadajÄ…zych za klucze gÅ‚Ã³wne w danych tabelach
 SELECT count(*)
 FROM expense_tracker.bank_account_types bat 
 WHERE id_ba_type = -1;
@@ -47,9 +47,9 @@ SELECT count(*)
 FROM expense_tracker.transactions
 WHERE id_transaction = -1;
 
---b) analiza braków danych tabela transactions 
+--b) analiza brakÃ³w danych tabela transactions 
 
--- obliczenie jaki procent ca³ego zbioru danych stanowi¹ braki
+-- obliczenie jaki procent caÅ‚ego zbioru danych stanowiÄ… braki
 WITH missing_val_in_set as
 	(SELECT count(*) * (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS  WHERE table_schema = 'expense_tracker' AND table_name = 'transactions') AS number_of_records,
 	   SUM(CASE WHEN id_transaction IS NULL THEN 1 ELSE 0 END) + 
@@ -69,7 +69,7 @@ SELECT  number_of_records,
 		number_of_missing_val::float /number_of_records *100 AS pct_missing_val
 FROM missing_val_in_set;
 
--- obliczenie procentowego udzia³u brakuj¹cych danych w kolumnach
+-- obliczenie procentowego udziaÅ‚u brakujÄ…cych danych w kolumnach
 SELECT count(*) AS number_of_records,
 	   COALESCE(SUM(CASE WHEN id_transaction IS NULL THEN 1 END)::float/count(*) * 100,0)	AS pct_of_missing_val_id_transaction,
 	   COALESCE(SUM(CASE WHEN id_trans_ba IS NULL THEN 1 END)::float/count(*) * 100,0)	AS pct_of_missing_val_id_trans_ba,
@@ -85,7 +85,7 @@ SELECT count(*) AS number_of_records,
 FROM expense_tracker.transactions t ;
 
 
--- obliczenie braków danych w wierszach 
+-- obliczenie brakÃ³w danych w wierszach 
 SELECT 
 	(SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS  WHERE table_schema = 'expense_tracker' AND table_name = 'transactions') AS number_of_variable,
 	num_nulls(id_transaction, id_trans_ba, id_trans_cat, id_trans_subcat, id_trans_type, 
@@ -97,24 +97,24 @@ SELECT
 			  insert_date, update_date)::float / (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS  WHERE table_schema = 'expense_tracker' AND table_name = 'transactions') * 100 AS pct_of_missing_val_in_row
 FROM  expense_tracker.transactions t;
 
-/*3. Zastanów siê i rozpisz w kilku krokach, Twoje podejœcie do wykorzystania przygotowanego schematu, jako rzeczywistego elementu aplikacji.
+/*3. ZastanÃ³w siÄ™ i rozpisz w kilku krokach, Twoje podejÅ›cie do wykorzystania przygotowanego schematu, jako rzeczywistego elementu aplikacji.
 Wymagania:
-? Korzysta z niej wiele rodzin / osób (czy trzymasz wszystko w jednym
-schemacie / czy schemat per u¿ytkownik (rodzina) ?)
-? Jak zarz¹dzasz u¿ytkownikami i has³ami?
-? Jak wykorzystasz wnioski z poprzednich modu³ów (które tabele, klucze obce
-zostaj¹ / nie zostaj¹, jak podejdziesz do wydajnoœci itd.) */ 
+? Korzysta z niej wiele rodzin / osÃ³b (czy trzymasz wszystko w jednym
+schemacie / czy schemat per uÅ¼ytkownik (rodzina) ?)
+? Jak zarzÄ…dzasz uÅ¼ytkownikami i hasÅ‚ami?
+? Jak wykorzystasz wnioski z poprzednich moduÅ‚Ã³w (ktÃ³re tabele, klucze obce
+zostajÄ… / nie zostajÄ…, jak podejdziesz do wydajnoÅ›ci itd.) */ 
 
 /*3.
-- schemat na rodzinê
-- dane u¿ytkowników bêd¹ przechowywane w tabeli users. U¿ytkownik wpisuje swoje has³o nastêpnie jest ono szyfrowane generowan¹ w locie funkcj¹
+- schemat na rodzinÄ™
+- dane uÅ¼ytkownikÃ³w bÄ™dÄ… przechowywane w tabeli users. UÅ¼ytkownik wpisuje swoje hasÅ‚o nastÄ™pnie jest ono szyfrowane generowanÄ… w locie funkcjÄ…
 
 Modyfikacje schematu:
-- nie usuwa³em ¿adnych kluczy obcych, doda³em natomiast now¹ tabelê users_bank_account_owner ³¹cz¹c¹ tabelê users z bank_account_owners
-- usun¹³em kolumnê password_salt z tabel users
-- dodanie partycjonowania tabeli transactions ze wzglêdu na rok transakcji 
-- stworzenie indexów typu betree na tabelach transactions, bank_account_owner odpowiednio na kolumnach  transaction_date, owner_name  i indexów GIN na tabelach transaction_category, transaction_subcategory  odpowiednio na kolumnach category_name, subcategory_name
-- nie tworzê triggerów i funkcji automatyzuj¹cych jakieœ czynnoœci, poniewa¿ to bêdzie zrealizowane w warstwie backendu
+- nie usuwaÅ‚em Å¼adnych kluczy obcych, dodaÅ‚em natomiast nowÄ… tabelÄ™ users_bank_account_owner Å‚Ä…czÄ…cÄ… tabelÄ™ users z bank_account_owners
+- usunÄ…Å‚em kolumnÄ™ password_salt z tabel users
+- dodanie partycjonowania tabeli transactions ze wzglÄ™du na rok transakcji 
+- stworzenie indexÃ³w typu betree na tabelach transactions, bank_account_owner odpowiednio na kolumnach  transaction_date, owner_name  i indexÃ³w GIN na tabelach transaction_category, transaction_subcategory  odpowiednio na kolumnach category_name, subcategory_name
+- nie tworzÄ™ triggerÃ³w i funkcji automatyzujÄ…cych jakieÅ› czynnoÅ›ci, poniewaÅ¼ to bÄ™dzie zrealizowane w warstwie backendu
 */
 
 
